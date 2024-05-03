@@ -26,6 +26,10 @@
 ## بخش دوم:
 برای این بخش یک سیستم ذخیره و بازیابی ساده پیاده‌سازی شده است. در ابتدا کد این بخش به شرح زیر است:
 ```Java
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Scanner;
+
 public class Student {
     private static final ArrayList<Student> allStudents = new ArrayList<>();
 
@@ -59,7 +63,7 @@ public class Student {
 
         allStudents.add(this);
     }
-    
+
     private static void addInitialData() {
         int allStudentsSize = 10000000;
         for (int i = 0; i < allStudentsSize; i++) {
@@ -73,10 +77,10 @@ public class Student {
 
             int age = (int) (Math.random() * 40);
             int grade = (int) (Math.random() * 20);
-            new Student(name.toString(), getHash(password.toString()), age, grade);
+            Student student = new Student(name.toString(), getHash(password.toString()), age, grade);
 
             if (i == allStudentsSize - 2 || i == allStudentsSize - 1)
-                System.out.println("Student added: " + name.toString() + " " + password.toString() + " " + age + " " + grade);
+                System.out.println("Student added: " + student + " password: " + password);
         }
     }
 
@@ -96,7 +100,7 @@ public class Student {
         while (indexes.size() < allStudents.size() && iterations < maxIterations) {
             int currentRandom = (int) (Math.random() * allStudents.size());
             Student currentStudent = allStudents.get(currentRandom);
-            if (currentStudent.getName().equals(name) && currentStudent.password == getHash(password))
+            if (currentStudent.name.equals(name) && currentStudent.password == getHash(password))
                 return currentStudent;
 
             ++iterations;
@@ -106,7 +110,7 @@ public class Student {
 
         if (iterations == maxIterations) {
             for (Student student : allStudents) {
-                if (student.getName().equals(name) && student.password == getHash(password))
+                if (student.name.equals(name) && student.password == getHash(password))
                     return student;
             }
         }
@@ -118,9 +122,35 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "name='" + name + '\'' +
+                ", password=" + password +
                 ", age=" + age +
                 ", grade=" + grade +
                 '}';
     }
 }
+```
+
+در ابتدای اجرای کد، یک سری داده‌ی fake به درون سیستم اضافه می‌کنیم. تمام دانشجویان در یک آرایه‌ی static ذخیرخ می‌شوند. همچنین اطلاعات دو دانشجوی آخر برای دسترسی و چک کردن سیستم، در console چاپ می‌شوند. برای name و password این داده‌ها یک سری داده‌ی رندوم استفاده شده است. توجه کنید که passwordها به صورت hash شده درون سیستم ذخیره می‌شوند. سپس سیستم از کاربر می‌خواهد که name و password یک کاربر را وارد کند و سیستم اطلاعات آن کاربر را خروجی می‌دهد. تا وقتی که کاربر دستور exit را وارد نکند، این روند گرفتن name و password ادامه می‌یابد. روند بازیابی داده‌ی شخض مورد نظر به شکل زیر است:
+    یک میلیارد بار عدد تصادفی انتخاب می‌شود. هر بار می‌بینیم که آیا در آن index از عدد انتخابی در آرایه‌ی تمام دانشجویان، دانشجوی انتخاب شده name و passwordاش با شخص مورد نظر یکسان است یا خیر. پس از یک میلیار بار اگر هنوز دانشجویی پیدا نشده باشد، به روی کل آرایه‌ی دانشجویان for می‌زنیم و آنگاه برابری name و password را چک می‌کنیم. در عکس‌های زیر می‌توانید ورودی و خروجی profile را مشاهده کنید:
+```Bash
+Student added: Student{name='vqsvieecyn', password=1032231955, age=28, grade=2} password: pqggzwzjrw
+Student added: Student{name='pqpmhspmod', password=-1721416524, age=32, grade=5} password: fakjopafdx
+All students: 10000000
+Enter student credentials (name, password): 
+12345
+12345
+Student: null
+Enter student credentials (name, password): 
+abcd
+abcd
+Student: null
+Enter student credentials (name, password): 
+vqsvieecyn
+pqggzwzjrw
+Student: Student{name='vqsvieecyn', password=1032231955, age=28, grade=2}
+Enter student credentials (name, password): 
+exit
+
+
+Process finished with exit code 0
 ```
