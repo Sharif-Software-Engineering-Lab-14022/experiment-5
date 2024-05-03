@@ -131,7 +131,7 @@ public class Student {
 ```
 
 در ابتدای اجرای کد، یک سری داده‌ی fake به درون سیستم اضافه می‌کنیم. تمام دانشجویان در یک آرایه‌ی static ذخیرخ می‌شوند. همچنین اطلاعات دو دانشجوی آخر برای دسترسی و چک کردن سیستم، در console چاپ می‌شوند. برای name و password این داده‌ها یک سری داده‌ی رندوم استفاده شده است. توجه کنید که passwordها به صورت hash شده درون سیستم ذخیره می‌شوند. سپس سیستم از کاربر می‌خواهد که name و password یک کاربر را وارد کند و سیستم اطلاعات آن کاربر را خروجی می‌دهد. تا وقتی که کاربر دستور exit را وارد نکند، این روند گرفتن name و password ادامه می‌یابد. روند بازیابی داده‌ی شخض مورد نظر به شکل زیر است:
-    یک میلیارد بار عدد تصادفی انتخاب می‌شود. هر بار می‌بینیم که آیا در آن index از عدد انتخابی در آرایه‌ی تمام دانشجویان، دانشجوی انتخاب شده name و passwordاش با شخص مورد نظر یکسان است یا خیر. پس از یک میلیار بار اگر هنوز دانشجویی پیدا نشده باشد، به روی کل آرایه‌ی دانشجویان for می‌زنیم و آنگاه برابری name و password را چک می‌کنیم. در عکس‌های زیر می‌توانید ورودی و خروجی profile را مشاهده کنید:
+    یک میلیارد بار عدد تصادفی انتخاب می‌شود. هر بار می‌بینیم که آیا در آن index از عدد انتخابی در آرایه‌ی تمام دانشجویان، دانشجوی انتخاب شده name و passwordاش با شخص مورد نظر یکسان است یا خیر. پس از یک میلیار بار اگر هنوز دانشجویی پیدا نشده باشد، به روی کل آرایه‌ی دانشجویان `for` می‌زنیم و آنگاه برابری name و password را چک می‌کنیم. در عکس‌های زیر می‌توانید ورودی و خروجی profile را مشاهده کنید:
 ```Bash
 Student added: Student{name='vqsvieecyn', password=1032231955, age=28, grade=2} password: pqggzwzjrw
 Student added: Student{name='pqpmhspmod', password=-1721416524, age=32, grade=5} password: fakjopafdx
@@ -162,3 +162,138 @@ Process finished with exit code 0
 <img width="1680" alt="5) Exceptions" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/c87b7979-6615-4093-b880-c6302807e813">
 <img width="1680" alt="6) Telemetry" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/1686992e-74d4-463d-ace7-de5df8b96ff3">
 <img width="1680" alt="7) Summary" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/233adfde-12fc-44d9-a771-155e0badf2ed">
+
+در عکس‌های بالا، سه مکان به طور کلی peak داریم. دو تای اول مربوط به ورودی‌های اشتباه و آخری مربوط به ورودی درست است. اگر توجه کنیم (در tabهای CPU و Threads)، می‌بینیم که هم مدت زمان طول کشیدن peak و هم بلندی آن، برای داده‌های اشتباه بیش‌تر است چون کل متد `getStudent` اجرا می‌شود.
+در ادامه کلاس `StudentNew` را تعریف می‌کنیم که در آن اصلاحات زیر انجام شده است:
+- تبدیل آرایه‌ی ذخیره‌سازی دانشجویان به `HashMap` که کلید آن اسم دانشجویان و مقدار آن خود دانشجو است.
+- دیگر `while`ی در متد `getStudent` وجود ندارد. این باعث می‌شود تا متد `getHash` تنها یک بار برای چک کردن برابری password اجرا شود. توجع کنید که متد `getHash` یک به یک نیست.
+
+کد جدید به شکل زیر است:
+```Java
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+
+public class StudentNew {
+    private static final HashMap<String, StudentNew> allStudents = new HashMap<>();
+
+    private final String name;
+    private final int password;
+    private final int age;
+    private final int grade;
+
+    public static void main(String[] args) {
+        addInitialData();
+        System.out.println("All students: " + allStudents.size());
+
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("Enter student credentials (name, password): ");
+            String inputName = scanner.nextLine();
+            String inputPassword = scanner.nextLine();
+            if (inputName.equals("exit"))
+                break;
+
+            StudentNew student = getStudent(inputName, inputPassword);
+            System.out.println("Student: " + student);
+        }
+    }
+
+    public StudentNew(String name, int password, int age, int grade) {
+        this.name = name;
+        this.password = password;
+        this.age = age;
+        this.grade = grade;
+
+        allStudents.put(name, this);
+    }
+
+    private static void addInitialData() {
+        int allStudentsSize = 10000000;
+        for (int i = 0; i < allStudentsSize; i++) {
+            StringBuilder name = new StringBuilder();
+            for (int j = 0; j < 10; j++)
+                name.append((char) (Math.random() * 26 + 'a'));
+
+            StringBuilder password = new StringBuilder();
+            for (int j = 0; j < 10; j++)
+                password.append((char) (Math.random() * 26 + 'a'));
+
+            int age = (int) (Math.random() * 40);
+            int grade = (int) (Math.random() * 20);
+            StudentNew student = new StudentNew(name.toString(), getHash(password.toString()), age, grade);
+
+            if (i == allStudentsSize - 2 || i == allStudentsSize - 1)
+                System.out.println("Student added: " + student + " password: " + password);
+        }
+    }
+
+    private static int getHash(String name) {
+        int hash = 0;
+        for (int i = 0; i < name.length(); i++) {
+            hash = 31 * hash + name.charAt(i);
+        }
+
+        return hash;
+    }
+
+    public static StudentNew getStudent(String name, String password) {
+        StudentNew student = allStudents.get(name);
+        if (student != null && student.password == getHash(password))
+            return student;
+
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", password=" + password +
+                ", age=" + age +
+                ", grade=" + grade +
+                '}';
+    }
+}
+```
+
+ورودی‌های زیر به کد جدید داده شد:
+```Bash
+Student added: Student{name='wtyquhvwau', password=-947366358, age=2, grade=5} password: imeipyyvpl
+Student added: Student{name='cznqxxdsdb', password=-1546172046, age=10, grade=13} password: pvjwwycpwg
+All students: 10000000
+Enter student credentials (name, password): 
+12345
+12345
+Student: null
+Enter student credentials (name, password): 
+abcd
+abcd
+Student: null
+Enter student credentials (name, password): 
+hi
+hi
+Student: null
+Enter student credentials (name, password): 
+wtyquhvwau
+imeipyyvpl
+Student: Student{name='wtyquhvwau', password=-947366358, age=2, grade=5}
+Enter student credentials (name, password): 
+exit
+
+
+Process finished with exit code 0
+```
+
+خروجی profile به شکل زیر است:
+
+<img width="1680" alt="8) CPU" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/321b8cdd-7239-4077-94ec-5c2870cdcbc0">
+<img width="1636" alt="9) Threads" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/62409e87-746b-4d12-98ae-ce7f45eedde7">
+<img width="1636" alt="10) Deadlocks" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/8c4fb30f-4c68-47fa-b52e-81c8a8a278de">
+<img width="1680" alt="11) Memory" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/fa3d3043-b1af-4897-b145-af4086138b30">
+<img width="1680" alt="12) Exceptions" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/3a12202d-8171-4d0d-8fde-3add8a253f60">
+<img width="1680" alt="13) Telemetry" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/2662fd5f-cca3-458b-8803-d451b55822ff">
+<img width="1680" alt="14) Summary" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/a1c0d836-b330-4122-8428-4f9a8338f8e2">
+
+همان‌طور که در تصاویر بالا می‌بینیم، دیگر paek و بخش‌های CPU intensive نداریم و الگوریتم بهبود یافته است.
