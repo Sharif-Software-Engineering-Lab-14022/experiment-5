@@ -154,3 +154,11 @@ exit
 
 Process finished with exit code 0
 ```
+
+<img width="1680" alt="1) CPU" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/78bf085e-98c9-4c72-90a7-587938ad7ed8">
+<img width="1680" alt="2) Threads" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/aa1995a5-7588-4e72-9f75-9b4a904efd24">
+<img width="1680" alt="3) Deadlocks" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/2e48e8ee-0f83-435a-b1c5-801b5586d022">
+<img width="1680" alt="4) Memory" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/0a279fc3-f139-4d67-aeb1-542713be55e1">
+<img width="1680" alt="5) Exceptions" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/c87b7979-6615-4093-b880-c6302807e813">
+<img width="1680" alt="6) Telemetry" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/1686992e-74d4-463d-ace7-de5df8b96ff3">
+<img width="1680" alt="7) Summary" src="https://github.com/Sharif-Software-Engineering-Lab-14022/experiment-5/assets/79265203/233adfde-12fc-44d9-a771-155e0badf2ed">
